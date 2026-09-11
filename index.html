@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Can you hear Me? - Silent Relay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-main: #06090e;
+      --surface-1: #0e1525;
+      --surface-2: #162035;
+      --surface-3: #22304d;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(99, 102, 241, 0.4);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-blue: #3b82f6;
+      --accent-indigo: #6366f1;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --accent-amber: #f59e0b;
+      --glow-blue: rgba(59, 130, 246, 0.25);
+      --glow-emerald: rgba(16, 185, 129, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .view {
+      display: none;
+      height: 100%;
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .view.active {
+      display: flex;
+    }
+
+    /* ========================================================
+       0. OPENING COVER VIEW ('Can you hear Me?')
+       ======================================================== */
+    #opening-view {
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at 50% 35%, #182848 0%, #080d18 60%, var(--bg-main) 100%);
+      padding: 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .opening-content-box {
+      max-width: 860px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      z-index: 2;
+    }
+
+    .opening-tag {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: #93c5fd;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      padding: 6px 18px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+    }
+
+    .opening-main-title {
+      font-size: 68px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .opening-subtitle {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      letter-spacing: 0.5px;
+    }
+
+    .opening-verse-box {
+      background: rgba(14, 21, 37, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 28px;
+      max-width: 720px;
+      margin-top: 10px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    .opening-verse-text {
+      font-size: 15px;
+      line-height: 1.55;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+
+    .opening-verse-ref {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent-amber);
+      margin-top: 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .btn-enter-arena {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+      color: #ffffff;
+      border: none;
+      padding: 16px 44px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      cursor: pointer;
+      margin-top: 18px;
+      transition: all 0.2s;
+      box-shadow: 0 10px 25px var(--glow-blue);
+    }
+
+    .btn-enter-arena:hover {
+      filter: brightness(1.15);
+      transform: translateY(-2px);
+    }
+
+    .opening-hint {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ========================================================
+       1. LOBBY & DIRECT MATCH SETUP
+       ======================================================== */
+    #lobby-view {
+      background: radial-gradient(circle at 50% 15%, #141f35 0%, var(--bg-main) 75%);
+      padding: 24px 36px;
+      overflow-y: auto;
+    }
+
+    .lobby-navbar {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title span {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 1px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-2);
+      color: var(--text-primary);
+      border-color: var(--border-focus);
+    }
+
+    /* Team Scoreboard Strip */
+    .scoreboard-strip {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .team-score-card {
+      background: var(--surface-1);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .team-score-card:hover {
+      border-color: var(--border-focus);
+    }
+
+    .team-score-card.active-target {
+      border-color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.08);
+      box-shadow: 0 0 16px var(--glow-blue);
+    }
+
+    .team-card-info h4 {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .team-card-info p {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .team-card-score {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--accent-emerald);
+    }
+
+    /* Main Match Configurator Box */
+    .match-config-panel {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px 34px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .config-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 22px;
+      margin-bottom: 24px;
+    }
+
+    .config-section-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Direct Category Selector */
+    .cat-selector-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 230px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .cat-select-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s;
+    }
+
+    .cat-select-item:hover {
+      border-color: var(--border-focus);
+      color: var(--text-primary);
+    }
+
+    .cat-select-item.selected {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--accent-blue);
+      color: #93c5fd;
+    }
+
+    /* Deck Presets */
+    .deck-preset-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .preset-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preset-card:hover {
+      border-color: var(--border-focus);
+    }
+
+    .preset-card.selected {
+      border-color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .preset-card h5 {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .preset-card p {
+      font-size: 10px;
+      color: var(--text-secondary);
+      line-height: 1.35;
+    }
+
+    /* Live Time Adjuster */
+    .timer-config-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .time-preset-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+
+    .btn-time-chip {
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 7px 0;
+      border-radius: 6px;
+      font-size: 10.5px;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-time-chip:hover {
+      color: var(--text-primary);
+    }
+
+    .btn-time-chip.active {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+    }
+
+    .custom-time-input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .custom-time-input-group label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .custom-time-input-group input {
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      width: 75px;
+      text-align: center;
+    }
+
+    .launch-action-bar {
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .target-team-summary {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .target-team-summary strong {
+      color: var(--accent-blue);
+      font-size: 15px;
+    }
+
+    .btn-launch-game {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+      color: #ffffff;
+      border: none;
+      padding: 13px 34px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+
+    .btn-launch-game:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 8px 24px var(--glow-blue);
+    }
+
+    /* ========================================================
+       2. LIVE ARENA VIEW (PRESENTATION SCREEN)
+       ======================================================== */
+    #arena-view {
+      background: radial-gradient(circle at 50% 25%, #131c30 0%, var(--bg-main) 75%);
+    }
+
+    .arena-topbar {
+      height: 72px;
+      padding: 0 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+    }
+
+    .arena-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-home-icon {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-home-icon:hover {
+      background: var(--surface-3);
+      color: var(--text-primary);
+    }
+
+    .active-team-pill {
+      font-size: 12px;
+      font-weight: 900;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1.5px solid var(--accent-blue);
+      color: #93c5fd;
+      padding: 5px 14px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .card-progress-num {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-secondary);
+    }
+
+    .card-progress-num strong {
+      color: var(--text-primary);
+    }
+
+    .arena-timer-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 10px;
+    }
+
+    .timer-btn-nudge {
+      background: var(--surface-3);
+      border: none;
+      color: var(--text-secondary);
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .timer-btn-nudge:hover {
+      color: var(--text-primary);
+    }
+
+    .timer-clock {
+      font-variant-numeric: tabular-nums;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      padding: 0 6px;
+    }
+
+    .timer-clock.warning {
+      color: var(--accent-rose);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .arena-score-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .round-score-pill {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 5px 14px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .round-score-pill .label {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--accent-emerald);
+    }
+
+    .round-score-pill .val {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--accent-emerald);
+    }
+
+    .cumulative-team-score {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    /* Presentation Stage */
+    .arena-stage {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 44px;
+    }
+
+    .stage-card {
+      width: 100%;
+      max-width: 1200px;
+      min-height: 480px;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-indigo));
+    }
+
+    .stage-card.is-trap::before {
+      background: linear-gradient(90deg, var(--accent-rose), var(--accent-amber));
+    }
+
+    .stage-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stage-cat-badge {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--text-secondary);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .stage-cat-badge.trap-badge {
+      color: var(--accent-rose);
+      background: rgba(244, 63, 94, 0.1);
+      border-color: rgba(244, 63, 94, 0.3);
+    }
+
+    .stage-ref-tag {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--accent-blue);
+      letter-spacing: -0.5px;
+    }
+
+    .stage-ref-tag.trap-ref {
+      color: var(--accent-rose);
+    }
+
+    .stage-scripture-text {
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1.35;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+      max-width: 1040px;
+      margin: 20px 0;
+      word-break: keep-all;
+    }
+
+    .stage-scripture-text.trap-text {
+      font-size: 64px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #fed7aa;
+      text-transform: uppercase;
+    }
+
+    .stage-footer-instruction {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .arena-bottom-controls {
+      height: 88px;
+      padding: 0 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(12px);
+    }
+
+    .hotkey-legend {
+      display: flex;
+      gap: 16px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .key-cap {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+
+    .arena-action-buttons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-action {
+      border: none;
+      padding: 13px 26px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+
+    .btn-action-pass {
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-action-pass:hover {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: var(--accent-rose);
+      color: var(--accent-rose);
+    }
+
+    .btn-action-correct {
+      background: var(--accent-emerald);
+      color: #ffffff;
+    }
+
+    .btn-action-correct:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 6px 20px var(--glow-emerald);
+    }
+
+    .btn-pause-round {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 13px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    /* ========================================================
+       3. ROUND SUMMARY REPORT
+       ======================================================== */
+    #summary-view {
+      background: radial-gradient(circle at 50% 30%, #162035 0%, var(--bg-main) 80%);
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    .summary-card-box {
+      width: 100%;
+      max-width: 620px;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 48px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+    }
+
+    .summary-icon-wrap {
+      width: 54px;
+      height: 54px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border-radius: 50%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .summary-round-title {
+      font-size: 26px;
+      font-weight: 900;
+    }
+
+    .summary-team-highlight {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin-top: 4px;
+    }
+
+    .summary-big-score {
+      font-size: 56px;
+      font-weight: 900;
+      color: var(--accent-emerald);
+      margin: 14px 0;
+    }
+
+    .summary-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    .summary-stat-cell {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: 10px;
+      text-align: left;
+    }
+
+    .summary-stat-cell .lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .summary-stat-cell .val {
+      font-size: 18px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    /* ========================================================
+       4. ADMIN / SETTINGS MODAL
+       ======================================================== */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .admin-modal {
+      width: 100%;
+      max-width: 760px;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      max-height: 88vh;
+      overflow: hidden;
+    }
+
+    .admin-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-header h3 {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .btn-close-modal:hover {
+      color: var(--text-primary);
+    }
+
+    .admin-body {
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .admin-section {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .admin-sec-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .team-edit-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .team-edit-row input[type="text"] {
+      flex: 1;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .team-edit-row input[type="number"] {
+      width: 70px;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      color: var(--accent-emerald);
+      padding: 7px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .btn-icon-danger {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: var(--accent-rose);
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .btn-add-team {
+      background: var(--surface-3);
+      border: 1px dashed var(--border-focus);
+      color: var(--accent-blue);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+    }
+
+    .toggle-row span {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: var(--surface-3);
+      border-radius: 34px;
+      transition: .2s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: .2s;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-blue);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .admin-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-danger-reset {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: var(--accent-rose);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-save-admin {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border: none;
+      padding: 9px 22px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================
+       VIEW 0: OPENING SCREEN ('Can you hear Me?')
+       ======================================================== -->
+  <div id="opening-view" class="view active">
+    <div class="opening-content-box">
+      <span class="opening-tag">Silent Scripture Relay</span>
+      <h1 class="opening-main-title">Can you hear Me?</h1>
+      <p class="opening-subtitle">Silent Relay: Discerning the Voice of the Lord amid the Noise of Culture</p>
+
+      <div class="opening-verse-box">
+        <p class="opening-verse-text">
+          &ldquo;But the Helper, the Holy Spirit, whom the Father will send in my name, he will teach you all things and bring to your remembrance all that I have said to you.&rdquo;
+        </p>
+        <div class="opening-verse-ref">John 14:26 (ESV)</div>
+      </div>
+
+      <button class="btn-enter-arena" onclick="enterFromOpening()">
+        ENTER LOBBY &bull; CONTROLLER
+      </button>
+      <div class="opening-hint">Press [SPACE] or Click to Enter</div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       VIEW 1: LOBBY & DIRECT MATCH SETUP
+       ======================================================== -->
+  <div id="lobby-view" class="view">
+    
+    <div class="lobby-navbar">
+      <div class="brand-title">
+        SILENT RELAY <span>ARENA CONTROLLER</span>
+      </div>
+      <div class="nav-actions">
+        <button class="btn-secondary" onclick="switchView('opening-view')">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+          Title Screen
+        </button>
+        <button class="btn-secondary" onclick="openAdminModal()">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/></svg>
+          Admin Settings
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Team Scoreboard Strip -->
+    <div class="scoreboard-strip" id="scoreboard-strip"></div>
+
+    <!-- Match Configuration Panel -->
+    <div class="match-config-panel">
+      <div class="config-grid">
+        
+        <!-- 1. Category Direct Selector -->
+        <div>
+          <div class="config-section-title">
+            <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M2.5 1A1.5 1.5 0 0 0 1 2.5v11A1.5 1.5 0 0 0 2.5 15h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 15 8.586V2.5A1.5 1.5 0 0 0 13.5 1h-11z"/></svg>
+            Select Category Directly
+          </div>
+          <div class="cat-selector-list" id="cat-selector-list"></div>
+        </div>
+
+        <!-- 2. Deck Presets -->
+        <div>
+          <div class="config-section-title">
+            <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/></svg>
+            Deck Preset Mode
+          </div>
+          <div class="deck-preset-stack">
+            <div class="preset-card selected" id="preset-std" onclick="selectDeckPreset('standard')">
+              <h5>Round 1: Standard Match</h5>
+              <p>• 15 Cards (12 Verses + 3 Traps)<br>• Establish team relay tempo &amp; rhythm</p>
+            </div>
+            <div class="preset-card" id="preset-comeback" onclick="selectDeckPreset('comeback')">
+              <h5>Round 2: The Comeback</h5>
+              <p>• 20 Cards (17 Verses + 3 Traps)<br>• Comeback Match (Listener swap required!)</p>
+            </div>
+            <div class="preset-card" id="preset-catonly" onclick="selectDeckPreset('catonly')">
+              <h5>Single Category Focus</h5>
+              <p>• 10 Verses from chosen category<br>• Verses only (No Traps)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Realtime Timer Control -->
+        <div>
+          <div class="config-section-title">
+            <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
+            Round Timer Limit
+          </div>
+          <div class="timer-config-box">
+            <div class="time-preset-row">
+              <button class="btn-time-chip" onclick="setTimePreset(60)">60s</button>
+              <button class="btn-time-chip" onclick="setTimePreset(90)">90s</button>
+              <button class="btn-time-chip" onclick="setTimePreset(120)">120s</button>
+              <button class="btn-time-chip active" id="chip-180" onclick="setTimePreset(180)">180s</button>
+            </div>
+            <div class="custom-time-input-group">
+              <label>Custom:</label>
+              <input type="number" id="custom-seconds-input" value="180" min="10" max="600" onchange="handleCustomTimeChange(this.value)">
+              <span style="font-size: 11px; color: var(--text-muted);">sec</span>
+            </div>
+            <p style="font-size: 10px; color: var(--text-muted); line-height: 1.4;">
+              * The in-game clock can also be adjusted by &plusmn;10s during live play.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Launch Bar -->
+      <div class="launch-action-bar">
+        <div class="target-team-summary">
+          Active Team: <strong id="summary-active-team-name">Team 1</strong> &bull; <span id="summary-active-mode-name">All Categories (Standard)</span>
+        </div>
+        <button class="btn-launch-game" onclick="launchArena()">
+          LAUNCH ARENA &rarr;
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================
+       VIEW 2: LIVE ARENA (PRESENTATION SCREEN)
+       ======================================================== -->
+  <div id="arena-view" class="view">
+    
+    <!-- Top HUD Bar -->
+    <div class="arena-topbar">
+      <div class="arena-meta-left">
+        <button class="btn-home-icon" onclick="confirmExitToHome()">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/><path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/></svg>
+          Lobby
+        </button>
+        <span class="active-team-pill" id="arena-team-pill">TEAM 1</span>
+        <div class="card-progress-num">CARD <strong id="curr-card-idx">1</strong> / <span id="total-card-idx">15</span></div>
+      </div>
+
+      <!-- Live Clock & Emergency Nudge -->
+      <div class="arena-timer-group">
+        <button class="timer-btn-nudge" onclick="nudgeTime(-10)">-10s</button>
+        <div class="timer-clock" id="arena-timer-clock">03:00</div>
+        <button class="timer-btn-nudge" onclick="nudgeTime(10)">+10s</button>
+      </div>
+
+      <div class="arena-score-group">
+        <div class="round-score-pill">
+          <span class="label">ROUND</span>
+          <span class="val" id="arena-round-pts">0</span>
+        </div>
+        <div class="cumulative-team-score">
+          Team Total: <strong id="arena-team-total-pts" style="color:var(--text-primary);">0</strong> PTS
+        </div>
+      </div>
+    </div>
+
+    <!-- Presentation Stage -->
+    <div class="arena-stage">
+      <div class="stage-card" id="arena-stage-card">
+        <div class="stage-card-meta">
+          <span class="stage-cat-badge" id="arena-cat-badge">CATEGORY 01: THE HOLY SPIRIT'S WORK</span>
+          <div class="stage-ref-tag" id="arena-ref-tag">John 14:26</div>
+        </div>
+
+        <div class="stage-scripture-text" id="arena-scripture-text">
+          &ldquo;Loading Scripture Card...&rdquo;
+        </div>
+
+        <div class="stage-footer-instruction">
+          MOUTH WORDS CLEARLY &bull; NO HAND GESTURES &bull; NO SOUND
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="arena-bottom-controls">
+      <div class="hotkey-legend">
+        <div><span class="key-cap">SPACE</span> Correct (+1)</div>
+        <div><span class="key-cap">&rarr;</span> Pass (0)</div>
+        <div><span class="key-cap">P</span> Pause</div>
+        <div><span class="key-cap">F</span> Fullscreen</div>
+      </div>
+
+      <div class="arena-action-buttons">
+        <button class="btn-pause-round" onclick="togglePause()" title="Pause / Resume">
+          <svg id="pause-icon-svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/></svg>
+        </button>
+        <button class="btn-action btn-action-pass" onclick="handlePass()">
+          <span>PASS (0 PT)</span>
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/></svg>
+        </button>
+        <button class="btn-action btn-action-correct" onclick="handleCorrect()">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>
+          <span>CORRECT (+1 PT)</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================
+       VIEW 3: ROUND SUMMARY REPORT
+       ======================================================== -->
+  <div id="summary-view" class="view">
+    <div class="summary-card-box">
+      <div class="summary-icon-wrap">
+        <svg width="28" height="28" fill="currentColor" viewBox="0 0 16 16"><path d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/></svg>
+      </div>
+      <h2 class="summary-round-title">ROUND COMPLETED</h2>
+      <p class="summary-team-highlight" id="summary-team-name">Team 1 Result</p>
+
+      <div class="summary-big-score" id="summary-pts-earned">+0 PTS</div>
+
+      <div class="summary-stats-grid">
+        <div class="summary-stat-cell">
+          <div class="lbl">Cards Guessed</div>
+          <div class="val" style="color: var(--accent-emerald);" id="summary-correct-count">0</div>
+        </div>
+        <div class="summary-stat-cell">
+          <div class="lbl">Passed / Skipped</div>
+          <div class="val" style="color: var(--accent-rose);" id="summary-pass-count">0</div>
+        </div>
+      </div>
+
+      <button class="btn-launch-game" style="width:100%;" onclick="returnToLobby()">
+        RETURN TO LOBBY
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       4. ADMIN / SETTINGS MODAL
+       ======================================================== -->
+  <div class="modal-backdrop" id="admin-modal">
+    <div class="admin-modal">
+      <div class="admin-header">
+        <h3>Admin &amp; Game Settings</h3>
+        <button class="btn-close-modal" onclick="closeAdminModal()">&times;</button>
+      </div>
+      
+      <div class="admin-body">
+        
+        <!-- Team Management -->
+        <div class="admin-section">
+          <div class="admin-sec-title">Team Management &amp; Score Adjustments</div>
+          <div id="admin-teams-list"></div>
+          <button class="btn-add-team" onclick="adminAddTeam()">+ Add Team</button>
+        </div>
+
+        <!-- Options -->
+        <div class="admin-section">
+          <div class="admin-sec-title">Audio &amp; Gameplay Options</div>
+          <div class="toggle-row">
+            <span>Sound Effects (Audio Synthesizer)</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="setting-sound-toggle" checked onchange="toggleSoundSetting(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <span>Include Worldly Noise Traps</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="setting-traps-toggle" checked onchange="toggleTrapsSetting(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="admin-footer">
+        <button class="btn-danger-reset" onclick="adminResetAllScores()">Reset All Scores to 0</button>
+        <button class="btn-save-admin" onclick="closeAdminModal()">Save &amp; Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       DATA REPOSITORY & GAME ENGINE
+       ======================================================== -->
+  <script>
+    const CATEGORIES = [
+      { id: 1, name: "The Holy Spirit's Work & Guidance" },
+      { id: 2, name: "The Power & Authority of God's Word" },
+      { id: 3, name: "Faith & Trusting God" },
+      { id: 4, name: "Peace Over Fear & Anxiety" },
+      { id: 5, name: "Wisdom & Guarding the Heart" },
+      { id: 6, name: "Identity in Christ" },
+      { id: 7, name: "Prayer & Seeking God" },
+      { id: 8, name: "Love & Community" },
+      { id: 9, name: "Spiritual Warfare & Armor" },
+      { id: 10, name: "Gratitude & Praise" }
+    ];
+
+    const SCRIPTURE_BANK = [
+      // Cat 1
+      { catId: 1, cat: "The Holy Spirit's Work & Guidance", ref: "John 14:26", text: "But the Helper, the Holy Spirit, whom the Father will send in my name, he will teach you all things and bring to your remembrance all that I have said to you." },
+      { catId: 1, cat: "The Holy Spirit's Work & Guidance", ref: "John 16:13", text: "When the Spirit of truth comes, he will guide you into all the truth, for he will not speak on his own authority, but whatever he hears he will speak." },
+      { catId: 1, cat: "The Holy Spirit's Work & Guidance", ref: "Galatians 5:16", text: "But I say, walk by the Spirit, and you will not gratify the desires of the flesh." },
+      { catId: 1, cat: "The Holy Spirit's Work & Guidance", ref: "Galatians 5:22-23", text: "But the fruit of the Spirit is love, joy, peace, patience, kindness, goodness, faithfulness, gentleness, self-control; against such things there is no law." },
+      { catId: 1, cat: "The Holy Spirit's Work & Guidance", ref: "Romans 8:14", text: "For all who are led by the Spirit of God are sons of God." },
+      { catId: 1, cat: "The Holy Spirit's Work & Guidance", ref: "Romans 8:26", text: "Likewise the Spirit helps us in our weakness. For we do not know what to pray for as we ought, but the Spirit himself intercedes for us with groanings too deep for words." },
+      { catId: 1, cat: "The Holy Spirit's Work & Guidance", ref: "Acts 1:8", text: "But you will receive power when the Holy Spirit has come upon you, and you will be my witnesses in Jerusalem and in all Judea and Samaria, and to the end of the earth." },
+      { catId: 1, cat: "The Holy Spirit's Work & Guidance", ref: "1 Corinthians 3:16", text: "Do you not know that you are God's temple and that God's Spirit dwells in you?" },
+      { catId: 1, cat: "The Holy Spirit's Work & Guidance", ref: "1 Thessalonians 5:19", text: "Do not quench the Spirit." },
+      { catId: 1, cat: "The Holy Spirit's Work & Guidance", ref: "Ephesians 5:18", text: "And do not get drunk with wine, for that is debauchery, but be filled with the Spirit." },
+      // Cat 2
+      { catId: 2, cat: "The Power & Authority of God's Word", ref: "Psalm 119:105", text: "Your word is a lamp to my feet and a light to my path." },
+      { catId: 2, cat: "The Power & Authority of God's Word", ref: "Psalm 119:11", text: "I have stored up your word in my heart, that I might not sin against you." },
+      { catId: 2, cat: "The Power & Authority of God's Word", ref: "Hebrews 4:12", text: "For the word of God is living and active, sharper than any two-edged sword, piercing to the division of soul and of spirit, of joints and of marrow." },
+      { catId: 2, cat: "The Power & Authority of God's Word", ref: "2 Timothy 3:16-17", text: "All Scripture is breathed out by God and profitable for teaching, for reproof, for correction, and for training in righteousness." },
+      { catId: 2, cat: "The Power & Authority of God's Word", ref: "Isaiah 40:8", text: "The grass withers, the flower fades, but the word of our God will stand forever." },
+      { catId: 2, cat: "The Power & Authority of God's Word", ref: "Matthew 4:4", text: "Man shall not live by bread alone, but by every word that comes from the mouth of God." },
+      { catId: 2, cat: "The Power & Authority of God's Word", ref: "Joshua 1:8", text: "This Book of the Law shall not depart from your mouth, but you shall meditate on it day and night." },
+      { catId: 2, cat: "The Power & Authority of God's Word", ref: "Psalm 1:2", text: "But his delight is in the law of the LORD, and on his law he meditates day and night." },
+      { catId: 2, cat: "The Power & Authority of God's Word", ref: "James 1:22", text: "But be doers of the word, and not hearers only, deceiving yourselves." },
+      { catId: 2, cat: "The Power & Authority of God's Word", ref: "John 1:1", text: "In the beginning was the Word, and the Word was with God, and the Word was God." },
+      // Cat 3
+      { catId: 3, cat: "Faith & Trusting God", ref: "Proverbs 3:5-6", text: "Trust in the LORD with all your heart, and do not lean on your own understanding. In all your ways acknowledge him, and he will make straight your paths." },
+      { catId: 3, cat: "Faith & Trusting God", ref: "Hebrews 11:1", text: "Now faith is the assurance of things hoped for, the conviction of things not seen." },
+      { catId: 3, cat: "Faith & Trusting God", ref: "Hebrews 11:6", text: "And without faith it is impossible to please him, for whoever would draw near to God must believe that he exists and that he rewards those who seek him." },
+      { catId: 3, cat: "Faith & Trusting God", ref: "Romans 10:17", text: "So faith comes from hearing, and hearing through the word of Christ." },
+      { catId: 3, cat: "Faith & Trusting God", ref: "2 Corinthians 5:7", text: "For we walk by faith, not by sight." },
+      { catId: 3, cat: "Faith & Trusting God", ref: "Mark 9:23", text: "And Jesus said to him, '‘If you can’! All things are possible for one who believes.'" },
+      { catId: 3, cat: "Faith & Trusting God", ref: "Psalm 56:3", text: "When I am afraid, I put my trust in you." },
+      { catId: 3, cat: "Faith & Trusting God", ref: "Matthew 17:20", text: "If you have faith like a grain of mustard seed, you will say to this mountain, 'Move from here to there,' and it will move." },
+      { catId: 3, cat: "Faith & Trusting God", ref: "Galatians 2:20", text: "I have been crucified with Christ. It is no longer I who live, but Christ who lives in me. And the life I now live in the flesh I live by faith in the Son of God, who loved me and gave himself for me." },
+      { catId: 3, cat: "Faith & Trusting God", ref: "Romans 1:17", text: "For in it the righteousness of God is revealed from faith for faith, as it is written, 'The righteous shall live by faith.'" },
+      // Cat 4
+      { catId: 4, cat: "Peace Over Fear & Anxiety", ref: "Philippians 4:6-7", text: "Do not be anxious about anything, but in everything by prayer and supplication with thanksgiving let your requests be made known to God. And the peace of God will guard your hearts." },
+      { catId: 4, cat: "Peace Over Fear & Anxiety", ref: "John 14:27", text: "Peace I leave with you; my peace I give to you. Not as the world gives do I give to you. Let not your hearts be troubled, neither let them be afraid." },
+      { catId: 4, cat: "Peace Over Fear & Anxiety", ref: "Isaiah 41:10", text: "Fear not, for I am with you; be not dismayed, for I am your God; I will strengthen you, I will help you, I will uphold you with my righteous right hand." },
+      { catId: 4, cat: "Peace Over Fear & Anxiety", ref: "1 Peter 5:7", text: "Casting all your anxieties on him, because he cares for you." },
+      { catId: 4, cat: "Peace Over Fear & Anxiety", ref: "Psalm 23:1", text: "The LORD is my shepherd; I shall not want." },
+      { catId: 4, cat: "Peace Over Fear & Anxiety", ref: "Matthew 6:33", text: "But seek first the kingdom of God and his righteousness, and all these things will be added to you." },
+      { catId: 4, cat: "Peace Over Fear & Anxiety", ref: "Psalm 46:1", text: "God is our refuge and strength, a very present help in trouble." },
+      { catId: 4, cat: "Peace Over Fear & Anxiety", ref: "Psalm 46:10", text: "Be still, and know that I am God. I will be exalted among the nations, I will be exalted in the earth!" },
+      { catId: 4, cat: "Peace Over Fear & Anxiety", ref: "John 16:33", text: "In the world you will have tribulation. But take heart; I have overcome the world." },
+      { catId: 4, cat: "Peace Over Fear & Anxiety", ref: "Isaiah 26:3", text: "You keep him in perfect peace whose mind is stayed on you, because he trusts in you." },
+      // Cat 5
+      { catId: 5, cat: "Wisdom & Guarding the Heart", ref: "Proverbs 4:23", text: "Keep your heart with all vigilance, for from it flow the springs of life." },
+      { catId: 5, cat: "Wisdom & Guarding the Heart", ref: "James 1:5", text: "If any of you lacks wisdom, you should ask God, who gives generously to all without reproach, and it will be given him." },
+      { catId: 5, cat: "Wisdom & Guarding the Heart", ref: "Proverbs 9:10", text: "The fear of the LORD is the beginning of wisdom, and the knowledge of the Holy One is insight." },
+      { catId: 5, cat: "Wisdom & Guarding the Heart", ref: "Psalm 90:12", text: "So teach us to number our days that we may get a heart of wisdom." },
+      { catId: 5, cat: "Wisdom & Guarding the Heart", ref: "Romans 12:2", text: "Do not be conformed to this world, but be transformed by the renewal of your mind, that by testing you may discern what is the will of God." },
+      { catId: 5, cat: "Wisdom & Guarding the Heart", ref: "Ephesians 5:15-16", text: "Look carefully then how you walk, not as unwise but as wise, making the best use of the time, because the days are evil." },
+      { catId: 5, cat: "Wisdom & Guarding the Heart", ref: "Proverbs 16:9", text: "The heart of man plans his way, but the LORD establishes his steps." },
+      { catId: 5, cat: "Wisdom & Guarding the Heart", ref: "Proverbs 1:7", text: "The fear of the LORD is the beginning of knowledge; fools despise wisdom and instruction." },
+      { catId: 5, cat: "Wisdom & Guarding the Heart", ref: "Colossians 3:2", text: "Set your minds on things that are above, not on things that are on earth." },
+      { catId: 5, cat: "Wisdom & Guarding the Heart", ref: "Philippians 4:8", text: "Whatever is true, whatever is honorable, whatever is just, whatever is pure, whatever is lovely, think about these things." },
+      // Cat 6
+      { catId: 6, cat: "Identity in Christ", ref: "2 Corinthians 5:17", text: "Therefore, if anyone is in Christ, he is a new creation. The old has passed away; behold, the new has come." },
+      { catId: 6, cat: "Identity in Christ", ref: "1 Peter 2:9", text: "But you are a chosen race, a royal priesthood, a holy nation, a people for his own possession, that you may proclaim the excellencies of him." },
+      { catId: 6, cat: "Identity in Christ", ref: "Ephesians 2:10", text: "For we are his workmanship, created in Christ Jesus for good works, which God prepared beforehand, that we should walk in them." },
+      { catId: 6, cat: "Identity in Christ", ref: "John 1:12", text: "But to all who did receive him, who believed in his name, he gave the right to become children of God." },
+      { catId: 6, cat: "Identity in Christ", ref: "Romans 8:1", text: "There is therefore now no condemnation for those who are in Christ Jesus." },
+      { catId: 6, cat: "Identity in Christ", ref: "Romans 8:38-39", text: "For I am sure that neither death nor life... will be able to separate us from the love of God in Christ Jesus our Lord." },
+      { catId: 6, cat: "Identity in Christ", ref: "Galatians 3:26", text: "For in Christ Jesus you are all sons of God, through faith." },
+      { catId: 6, cat: "Identity in Christ", ref: "1 John 3:1", text: "See what kind of love the Father has given to us, that we should be called children of God; and so we are." },
+      { catId: 6, cat: "Identity in Christ", ref: "John 15:15", text: "No longer do I call you servants... but I have called you friends, for all that I have heard from my Father I have made known to you." },
+      { catId: 6, cat: "Identity in Christ", ref: "Colossians 3:12", text: "Put on then, as God's chosen ones, holy and beloved, compassionate hearts, kindness, humility, meekness, and patience." },
+      // Cat 7
+      { catId: 7, cat: "Prayer & Seeking God", ref: "1 Thessalonians 5:16-18", text: "Rejoice always, pray without ceasing, give thanks in all circumstances; for this is the will of God in Christ Jesus for you." },
+      { catId: 7, cat: "Prayer & Seeking God", ref: "Jeremiah 33:3", text: "Call to me and I will answer you, and will tell you great and hidden things that you have not known." },
+      { catId: 7, cat: "Prayer & Seeking God", ref: "Matthew 7:7", text: "Ask, and it will be given to you; seek, and you will find; knock, and it will be opened to you." },
+      { catId: 7, cat: "Prayer & Seeking God", ref: "John 15:7", text: "If you abide in me, and my words abide in you, ask whatever you wish, and it will be done for you." },
+      { catId: 7, cat: "Prayer & Seeking God", ref: "Colossians 4:2", text: "Continue steadfastly in prayer, being watchful in it with thanksgiving." },
+      { catId: 7, cat: "Prayer & Seeking God", ref: "James 5:16", text: "Therefore, confess your sins to one another and pray for one another. The prayer of a righteous person has great power." },
+      { catId: 7, cat: "Prayer & Seeking God", ref: "Psalm 145:18", text: "The LORD is near to all who call on him, to all who call on him in truth." },
+      { catId: 7, cat: "Prayer & Seeking God", ref: "Ephesians 6:18", text: "Praying at all times in the Spirit, with all prayer and supplication. To that end, keep alert with all perseverance." },
+      { catId: 7, cat: "Prayer & Seeking God", ref: "Luke 11:9", text: "And I tell you, ask, and it will be given to you; seek, and you will find; knock, and it will be opened to you." },
+      { catId: 7, cat: "Prayer & Seeking God", ref: "Hebrews 4:16", text: "Let us then with confidence draw near to the throne of grace, that we may receive mercy and find grace to help in time of need." },
+      // Cat 8
+      { catId: 8, cat: "Love & Community", ref: "John 13:34", text: "A new commandment I give to you, that you love one another: just as I have loved you, you also are to love one another." },
+      { catId: 8, cat: "Love & Community", ref: "1 Corinthians 13:4-5", text: "Love is patient and kind; love does not envy or boast; it is not arrogant or rude. It does not insist on its own way." },
+      { catId: 8, cat: "Love & Community", ref: "1 John 4:11", text: "Beloved, if God so loved us, we also ought to love one another." },
+      { catId: 8, cat: "Love & Community", ref: "Romans 12:10", text: "Love one another with brotherly affection. Outdo one another in showing honor." },
+      { catId: 8, cat: "Love & Community", ref: "Galatians 6:2", text: "Bear one another's burdens, and so fulfill the law of Christ." },
+      { catId: 8, cat: "Love & Community", ref: "Ephesians 4:32", text: "Be kind to one another, tenderhearted, forgiving one another, as God in Christ forgave you." },
+      { catId: 8, cat: "Love & Community", ref: "Hebrews 10:24-25", text: "And let us consider how to stir up one another to love and good works, not neglecting to meet together." },
+      { catId: 8, cat: "Love & Community", ref: "Colossians 3:14", text: "And above all these put on love, which binds everything together in perfect harmony." },
+      { catId: 8, cat: "Love & Community", ref: "1 Peter 4:8", text: "Above all, keep loving one another earnestly, since love covers a multitude of sins." },
+      { catId: 8, cat: "Love & Community", ref: "1 John 3:18", text: "Little children, let us not love in word or talk but in deed and in truth." },
+      // Cat 9
+      { catId: 9, cat: "Spiritual Warfare & Armor", ref: "1 Corinthians 10:13", text: "No temptation has overtaken you that is not common to man. God is faithful, and he will provide the way of escape." },
+      { catId: 9, cat: "Spiritual Warfare & Armor", ref: "Ephesians 6:11", text: "Put on the whole armor of God, that you may be able to stand against the schemes of the devil." },
+      { catId: 9, cat: "Spiritual Warfare & Armor", ref: "James 4:7", text: "Submit yourselves therefore to God. Resist the devil, and he will flee from you." },
+      { catId: 9, cat: "Spiritual Warfare & Armor", ref: "1 Peter 5:8", text: "Be sober-minded; be watchful. Your adversary the devil prowls around like a roaring lion, seeking someone to devour." },
+      { catId: 9, cat: "Spiritual Warfare & Armor", ref: "2 Timothy 2:22", text: "So flee youthful passions and pursue righteousness, faith, love, and peace, along with those who call on the Lord." },
+      { catId: 9, cat: "Spiritual Warfare & Armor", ref: "Matthew 26:41", text: "Watch and pray that you may not enter into temptation. The spirit indeed is willing, but the flesh is weak." },
+      { catId: 9, cat: "Spiritual Warfare & Armor", ref: "Romans 13:14", text: "But put on the Lord Jesus Christ, and make no provision for the flesh, to gratify its desires." },
+      { catId: 9, cat: "Spiritual Warfare & Armor", ref: "Psalm 119:9", text: "How can a young man keep his way pure? By guarding it according to your word." },
+      { catId: 9, cat: "Spiritual Warfare & Armor", ref: "Colossians 3:5", text: "Put to death therefore what is earthly in you: sexual immorality, impurity, passion, evil desire, and covetousness." },
+      { catId: 9, cat: "Spiritual Warfare & Armor", ref: "1 John 5:4", text: "For everyone who has been born of God overcomes the world. And this is the victory that has overcome the world—our faith." },
+      // Cat 10
+      { catId: 10, cat: "Gratitude & Praise", ref: "Psalm 100:4", text: "Enter his gates with thanksgiving, and his courts with praise! Give thanks to him; bless his name!" },
+      { catId: 10, cat: "Gratitude & Praise", ref: "Psalm 103:1-2", text: "Bless the LORD, O my soul, and all that is within me, bless his holy name! Bless the LORD, O my soul, and forget not all his benefits." },
+      { catId: 10, cat: "Gratitude & Praise", ref: "Psalm 150:6", text: "Let everything that has breath praise the LORD! Praise the LORD!" },
+      { catId: 10, cat: "Gratitude & Praise", ref: "Colossians 3:17", text: "And whatever you do, in word or deed, do everything in the name of the Lord Jesus, giving thanks to God." },
+      { catId: 10, cat: "Gratitude & Praise", ref: "Psalm 34:1", text: "I will bless the LORD at all times; his praise shall continually be in my mouth." },
+      { catId: 10, cat: "Gratitude & Praise", ref: "Hebrews 13:15", text: "Through him then let us continually offer up a sacrifice of praise to God, that is, the fruit of lips that acknowledge his name." },
+      { catId: 10, cat: "Gratitude & Praise", ref: "Ephesians 5:19", text: "Addressing one another in psalms and hymns and spiritual songs, singing and making melody to the Lord with your heart." },
+      { catId: 10, cat: "Gratitude & Praise", ref: "Psalm 118:24", text: "This is the day that the LORD has made; let us rejoice and be glad in it." },
+      { catId: 10, cat: "Gratitude & Praise", ref: "Psalm 95:1-2", text: "Oh come, let us sing to the LORD; let us make a joyful noise to the rock of our salvation!" },
+      { catId: 10, cat: "Gratitude & Praise", ref: "Habakkuk 3:17-18", text: "Though the fig tree should not blossom... yet I will rejoice in the LORD; I will take joy in the God of my salvation." }
+    ];
+
+    const TRAP_WORDS = [
+      "NO CAP", "TOUCH GRASS", "LET HIM COOK", "LIVING RENT-FREE", "CAUGHT IN 4K",
+      "MAIN CHARACTER", "GIVING GRACE", "SKILL ISSUE", "UNSPOKEN RIZZ", "SHEESH!",
+      "YOU ARE COOKED", "NEGATIVE AURA", "BRAINROT", "TOTAL DELULU", "BITE THE BULLET",
+      "WRONG TREE", "SPILL THE TEA", "A PIECE OF CAKE", "BLESSING IN DISGUISE",
+      "BREAK A LEG", "UNDER THE WEATHER", "EARLY BIRD", "JUDGE A BOOK", "HIT THE SACK", "ON CLOUD NINE"
+    ];
+
+    let appState = {
+      teams: [
+        { id: 1, name: "Team 1 (Joshua)", score: 0 },
+        { id: 2, name: "Team 2 (Caleb)", score: 0 },
+        { id: 3, name: "Team 3 (Gideon)", score: 0 },
+        { id: 4, name: "Team 4 (Elijah)", score: 0 }
+      ],
+      activeTeamId: 1,
+      selectedCategoryId: 0,
+      selectedDeckPreset: "standard",
+      timerLimitSeconds: 180,
+      soundEnabled: true,
+      trapsEnabled: true
+    };
+
+    let liveDeck = [];
+    let currentCardIndex = 0;
+    let roundPoints = 0;
+    let correctCount = 0;
+    let passCount = 0;
+    let liveSecondsLeft = 180;
+    let clockInterval = null;
+    let isPaused = false;
+
+    /* Sound Synthesizer */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq, type, duration) {
+      if (!appState.soundEnabled) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function soundCorrect() {
+      playBeep(587.33, 'sine', 0.12);
+      setTimeout(() => playBeep(880, 'sine', 0.22), 90);
+    }
+
+    function soundPass() {
+      playBeep(240, 'triangle', 0.16);
+    }
+
+    function soundRoundEnd() {
+      playBeep(440, 'sawtooth', 0.25);
+      setTimeout(() => playBeep(330, 'sawtooth', 0.5), 220);
+    }
+
+    /* Persistence */
+    function loadSavedState() {
+      const saved = localStorage.getItem('silent_relay_state');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          appState = { ...appState, ...parsed };
+        } catch (e) {}
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('silent_relay_state', JSON.stringify(appState));
+    }
+
+    /* Initialization */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedState();
+      renderScoreboard();
+      renderCategoryList();
+      renderAdminModal();
+      updateConfigSummary();
+    });
+
+    function enterFromOpening() {
+      switchView('lobby-view');
+    }
+
+    /* Scoreboard */
+    function renderScoreboard() {
+      const container = document.getElementById('scoreboard-strip');
+      container.innerHTML = '';
+      appState.teams.forEach(team => {
+        const card = document.createElement('div');
+        card.className = `team-score-card ${team.id === appState.activeTeamId ? 'active-target' : ''}`;
+        card.onclick = () => selectActiveTeam(team.id);
+        card.innerHTML = `
+          <div class="team-card-info">
+            <h4>${team.name}</h4>
+            <p>${team.id === appState.activeTeamId ? '★ Selected for Match' : 'Click to select team'}</p>
+          </div>
+          <div class="team-card-score">${team.score}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function selectActiveTeam(teamId) {
+      appState.activeTeamId = teamId;
+      saveState();
+      renderScoreboard();
+      updateConfigSummary();
+    }
+
+    /* Category List */
+    function renderCategoryList() {
+      const list = document.getElementById('cat-selector-list');
+      list.innerHTML = '';
+
+      const mixedItem = document.createElement('div');
+      mixedItem.className = `cat-select-item ${appState.selectedCategoryId === 0 ? 'selected' : ''}`;
+      mixedItem.innerHTML = `<span>★ All Categories (Random Pool)</span><span style="font-size:10px;">100 Verses</span>`;
+      mixedItem.onclick = () => selectCategoryDirect(0);
+      list.appendChild(mixedItem);
+
+      CATEGORIES.forEach(c => {
+        const item = document.createElement('div');
+        item.className = `cat-select-item ${appState.selectedCategoryId === c.id ? 'selected' : ''}`;
+        item.innerHTML = `<span>Cat ${c.id < 10 ? '0' + c.id : c.id}. ${c.name}</span><span style="font-size:10px;">10 Verses</span>`;
+        item.onclick = () => selectCategoryDirect(c.id);
+        list.appendChild(item);
+      });
+    }
+
+    function selectCategoryDirect(catId) {
+      appState.selectedCategoryId = catId;
+      if (catId > 0 && appState.selectedDeckPreset !== 'catonly') {
+        selectDeckPreset('catonly');
+      } else if (catId === 0 && appState.selectedDeckPreset === 'catonly') {
+        selectDeckPreset('standard');
+      }
+      renderCategoryList();
+      updateConfigSummary();
+    }
+
+    /* Deck Presets */
+    function selectDeckPreset(preset) {
+      appState.selectedDeckPreset = preset;
+      document.getElementById('preset-std').classList.toggle('selected', preset === 'standard');
+      document.getElementById('preset-comeback').classList.toggle('selected', preset === 'comeback');
+      document.getElementById('preset-catonly').classList.toggle('selected', preset === 'catonly');
+      updateConfigSummary();
+    }
+
+    /* Timer Controls */
+    function setTimePreset(seconds) {
+      appState.timerLimitSeconds = seconds;
+      document.getElementById('custom-seconds-input').value = seconds;
+      document.querySelectorAll('.btn-time-chip').forEach(chip => chip.classList.remove('active'));
+      const activeBtn = document.getElementById(`chip-${seconds}`);
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    function handleCustomTimeChange(val) {
+      const num = parseInt(val, 10);
+      if (!isNaN(num) && num > 0) {
+        appState.timerLimitSeconds = num;
+        document.querySelectorAll('.btn-time-chip').forEach(chip => chip.classList.remove('active'));
+      }
+    }
+
+    function updateConfigSummary() {
+      const team = appState.teams.find(t => t.id === appState.activeTeamId) || appState.teams[0];
+      document.getElementById('summary-active-team-name').innerText = team ? team.name : 'Unknown';
+
+      let modeDesc = '';
+      if (appState.selectedCategoryId === 0) {
+        modeDesc = appState.selectedDeckPreset === 'comeback' ? 'Round 2: The Comeback (20 Cards)' : 'Round 1: Standard (15 Cards)';
+      } else {
+        const cat = CATEGORIES.find(c => c.id === appState.selectedCategoryId);
+        modeDesc = `Category Focus: ${cat ? cat.name : ''} (10 Verses)`;
+      }
+      document.getElementById('summary-active-mode-name').innerText = modeDesc;
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function generateMatchDeck() {
+      let pool = [];
+      let verseCount = 12;
+      let trapCount = appState.trapsEnabled ? 3 : 0;
+
+      if (appState.selectedCategoryId > 0) {
+        pool = SCRIPTURE_BANK.filter(v => v.catId === appState.selectedCategoryId);
+        const mapped = pool.map(v => ({
+          isTrap: false,
+          cat: v.cat,
+          ref: v.ref,
+          text: `\u201C${v.text}\u201D`
+        }));
+        if (appState.selectedDeckPreset === 'catonly' || !appState.trapsEnabled) {
+          return shuffle(mapped);
+        }
+        const traps = shuffle(TRAP_WORDS).slice(0, 2).map(w => ({
+          isTrap: true,
+          cat: "WORLDLY NOISE (TRAP)",
+          ref: "CULTURE TRAP",
+          text: w
+        }));
+        return shuffle([...mapped, ...traps]);
+      }
+
+      if (appState.selectedDeckPreset === 'comeback') {
+        verseCount = 17;
+        trapCount = appState.trapsEnabled ? 3 : 0;
+      } else {
+        verseCount = 12;
+        trapCount = appState.trapsEnabled ? 3 : 0;
+      }
+
+      const verses = shuffle(SCRIPTURE_BANK).slice(0, verseCount).map(v => ({
+        isTrap: false,
+        cat: v.cat,
+        ref: v.ref,
+        text: `\u201C${v.text}\u201D`
+      }));
+
+      const traps = shuffle(TRAP_WORDS).slice(0, trapCount).map(w => ({
+        isTrap: true,
+        cat: "WORLDLY NOISE (TRAP)",
+        ref: "CULTURE TRAP",
+        text: w
+      }));
+
+      return shuffle([...verses, ...traps]);
+    }
+
+    function launchArena() {
+      liveDeck = generateMatchDeck();
+      currentCardIndex = 0;
+      roundPoints = 0;
+      correctCount = 0;
+      passCount = 0;
+      liveSecondsLeft = appState.timerLimitSeconds;
+      isPaused = false;
+
+      const activeTeam = appState.teams.find(t => t.id === appState.activeTeamId) || { name: "Team", score: 0 };
+      document.getElementById('arena-team-pill').innerText = activeTeam.name;
+      document.getElementById('arena-team-total-pts').innerText = activeTeam.score;
+      document.getElementById('arena-round-pts').innerText = '0';
+      document.getElementById('total-card-idx').innerText = liveDeck.length;
+
+      updateClockDisplay();
+      renderArenaCard();
+
+      switchView('arena-view');
+      startLiveTimer();
+    }
+
+    function renderArenaCard() {
+      if (currentCardIndex >= liveDeck.length) {
+        completeRound();
+        return;
+      }
+
+      const card = liveDeck[currentCardIndex];
+      const stage = document.getElementById('arena-stage-card');
+      const catElem = document.getElementById('arena-cat-badge');
+      const refElem = document.getElementById('arena-ref-tag');
+      const textElem = document.getElementById('arena-scripture-text');
+
+      document.getElementById('curr-card-idx').innerText = currentCardIndex + 1;
+
+      if (card.isTrap) {
+        stage.classList.add('is-trap');
+        catElem.className = 'stage-cat-badge trap-badge';
+        refElem.className = 'stage-ref-tag trap-ref';
+        textElem.className = 'stage-scripture-text trap-text';
+      } else {
+        stage.classList.remove('is-trap');
+        catElem.className = 'stage-cat-badge';
+        refElem.className = 'stage-ref-tag';
+        textElem.className = 'stage-scripture-text';
+      }
+
+      catElem.innerText = card.cat;
+      refElem.innerText = card.ref;
+      textElem.innerText = card.text;
+    }
+
+    function handleCorrect() {
+      if (isPaused) return;
+      soundCorrect();
+      roundPoints += 1;
+      correctCount += 1;
+
+      const team = appState.teams.find(t => t.id === appState.activeTeamId);
+      if (team) {
+        team.score += 1;
+        document.getElementById('arena-team-total-pts').innerText = team.score;
+        saveState();
+      }
+
+      document.getElementById('arena-round-pts').innerText = roundPoints;
+      currentCardIndex++;
+      renderArenaCard();
+    }
+
+    function handlePass() {
+      if (isPaused) return;
+      soundPass();
+      passCount += 1;
+      currentCardIndex++;
+      renderArenaCard();
+    }
+
+    function startLiveTimer() {
+      clearInterval(clockInterval);
+      clockInterval = setInterval(() => {
+        if (!isPaused) {
+          liveSecondsLeft--;
+          updateClockDisplay();
+          if (liveSecondsLeft <= 0) {
+            clearInterval(clockInterval);
+            completeRound();
+          }
+        }
+      }, 1000);
+    }
+
+    function updateClockDisplay() {
+      const m = Math.floor(liveSecondsLeft / 60).toString().padStart(2, '0');
+      const s = (liveSecondsLeft % 60).toString().padStart(2, '0');
+      const clock = document.getElementById('arena-timer-clock');
+      clock.innerText = `${m}:${s}`;
+      clock.classList.toggle('warning', liveSecondsLeft <= 15);
+    }
+
+    function nudgeTime(delta) {
+      liveSecondsLeft = Math.max(0, liveSecondsLeft + delta);
+      updateClockDisplay();
+    }
+
+    function togglePause() {
+      isPaused = !isPaused;
+      const icon = document.getElementById('pause-icon-svg');
+      if (isPaused) {
+        icon.innerHTML = `<path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>`;
+      } else {
+        icon.innerHTML = `<path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/>`;
+      }
+    }
+
+    function completeRound() {
+      clearInterval(clockInterval);
+      soundRoundEnd();
+
+      const team = appState.teams.find(t => t.id === appState.activeTeamId);
+      document.getElementById('summary-team-name').innerText = team ? `${team.name} Final Result` : 'Round Completed';
+      document.getElementById('summary-pts-earned').innerText = `+${roundPoints} PTS`;
+      document.getElementById('summary-correct-count').innerText = correctCount;
+      document.getElementById('summary-pass-count').innerText = passCount;
+
+      renderScoreboard();
+      switchView('summary-view');
+    }
+
+    function confirmExitToHome() {
+      if (confirm("Exit to lobby? (Current round points will be preserved)")) {
+        clearInterval(clockInterval);
+        returnToLobby();
+      }
+    }
+
+    function returnToLobby() {
+      renderScoreboard();
+      switchView('lobby-view');
+    }
+
+    function switchView(viewId) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+    }
+
+    /* Admin Modal */
+    function openAdminModal() {
+      renderAdminModal();
+      document.getElementById('admin-modal').classList.add('active');
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').classList.remove('active');
+      saveState();
+      renderScoreboard();
+      updateConfigSummary();
+    }
+
+    function renderAdminModal() {
+      const container = document.getElementById('admin-teams-list');
+      container.innerHTML = '';
+
+      appState.teams.forEach((team) => {
+        const row = document.createElement('div');
+        row.className = 'team-edit-row';
+        row.innerHTML = `
+          <input type="text" value="${team.name}" onchange="updateTeamName(${team.id}, this.value)">
+          <input type="number" value="${team.score}" onchange="updateTeamScoreDirect(${team.id}, this.value)" title="Cumulative Score">
+          ${appState.teams.length > 1 ? `<button class="btn-icon-danger" onclick="adminRemoveTeam(${team.id})">Delete</button>` : ''}
+        `;
+        container.appendChild(row);
+      });
+
+      document.getElementById('setting-sound-toggle').checked = appState.soundEnabled;
+      document.getElementById('setting-traps-toggle').checked = appState.trapsEnabled;
+    }
+
+    function updateTeamName(teamId, newName) {
+      const team = appState.teams.find(t => t.id === teamId);
+      if (team && newName.trim()) {
+        team.name = newName.trim();
+        saveState();
+      }
+    }
+
+    function updateTeamScoreDirect(teamId, newScore) {
+      const team = appState.teams.find(t => t.id === teamId);
+      const val = parseInt(newScore, 10);
+      if (team && !isNaN(val)) {
+        team.score = Math.max(0, val);
+        saveState();
+      }
+    }
+
+    function adminAddTeam() {
+      const newId = Date.now();
+      appState.teams.push({
+        id: newId,
+        name: `Team ${appState.teams.length + 1}`,
+        score: 0
+      });
+      saveState();
+      renderAdminModal();
+    }
+
+    function adminRemoveTeam(teamId) {
+      if (appState.teams.length <= 1) return;
+      appState.teams = appState.teams.filter(t => t.id !== teamId);
+      if (appState.activeTeamId === teamId) {
+        appState.activeTeamId = appState.teams[0].id;
+      }
+      saveState();
+      renderAdminModal();
+    }
+
+    function adminResetAllScores() {
+      if (confirm("Are you sure you want to reset all team scores to 0?")) {
+        appState.teams.forEach(t => t.score = 0);
+        saveState();
+        renderAdminModal();
+        renderScoreboard();
+      }
+    }
+
+    function toggleSoundSetting(enabled) {
+      appState.soundEnabled = enabled;
+      saveState();
+    }
+
+    function toggleTrapsSetting(enabled) {
+      appState.trapsEnabled = enabled;
+      saveState();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+
+    /* Key Navigation */
+    window.addEventListener('keydown', (e) => {
+      // Opening Screen -> Space or Enter to Enter Lobby
+      if (document.getElementById('opening-view').classList.contains('active')) {
+        if (e.code === 'Space' || e.code === 'Enter') {
+          e.preventDefault();
+          enterFromOpening();
+          return;
+        }
+      }
+
+      // Live Arena Screen Navigation
+      const arenaActive = document.getElementById('arena-view').classList.contains('active');
+      if (!arenaActive) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        handleCorrect();
+      } else if (e.code === 'ArrowRight') {
+        e.preventDefault();
+        handlePass();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePause();
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      } else if (e.key === 'Escape') {
+        confirmExitToHome();
+      }
+    });
+  </script>
+</body>
+</html>
