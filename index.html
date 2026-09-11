@@ -57,7 +57,7 @@
       display: flex;
     }
 
-    /* Floating Fullscreen Button on Opening Screen */
+    /* Floating Fullscreen Button */
     .floating-fs-btn {
       position: absolute;
       top: 24px;
@@ -320,7 +320,7 @@
 
     .config-grid {
       display: grid;
-      grid-template-columns: 1.2fr 1fr 1fr;
+      grid-template-columns: 1.25fr 1fr 1fr;
       gap: 22px;
       margin-bottom: 24px;
     }
@@ -337,12 +337,12 @@
       gap: 6px;
     }
 
-    /* Direct Category Selector */
+    /* Focus Category Selector */
     .cat-selector-list {
       display: flex;
       flex-direction: column;
       gap: 5px;
-      max-height: 230px;
+      max-height: 240px;
       overflow-y: auto;
       padding-right: 6px;
     }
@@ -350,7 +350,7 @@
     .cat-select-item {
       background: var(--surface-2);
       border: 1px solid var(--border);
-      padding: 8px 12px;
+      padding: 9px 12px;
       border-radius: 7px;
       font-size: 11px;
       font-weight: 700;
@@ -373,18 +373,27 @@
       color: #93c5fd;
     }
 
+    .focus-tag {
+      font-size: 9px;
+      font-weight: 800;
+      background: var(--accent-blue);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
     /* Deck Presets */
     .deck-preset-stack {
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 8px;
     }
 
     .preset-card {
       background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 11px 13px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 14px;
       cursor: pointer;
       transition: all 0.15s;
     }
@@ -399,23 +408,26 @@
     }
 
     .preset-card h5 {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 800;
       color: var(--text-primary);
-      margin-bottom: 2px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .preset-card p {
-      font-size: 10px;
+      font-size: 10.5px;
       color: var(--text-secondary);
-      line-height: 1.35;
+      line-height: 1.45;
     }
 
     /* Live Time Adjuster */
     .timer-config-box {
       background: var(--surface-2);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 14px;
       display: flex;
       flex-direction: column;
@@ -487,6 +499,7 @@
       font-size: 13px;
       font-weight: 700;
       color: var(--text-secondary);
+      line-height: 1.4;
     }
 
     .target-team-summary strong {
@@ -498,7 +511,7 @@
       background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
       color: #ffffff;
       border: none;
-      padding: 13px 34px;
+      padding: 14px 36px;
       border-radius: 10px;
       font-size: 14px;
       font-weight: 900;
@@ -690,6 +703,10 @@
       background: linear-gradient(90deg, var(--accent-blue), var(--accent-indigo));
     }
 
+    .stage-card.is-wildcard::before {
+      background: linear-gradient(90deg, var(--accent-amber), #fbbf24);
+    }
+
     .stage-card.is-trap::before {
       background: linear-gradient(90deg, var(--accent-rose), var(--accent-amber));
     }
@@ -712,6 +729,12 @@
       text-transform: uppercase;
     }
 
+    .stage-cat-badge.wildcard-badge {
+      color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
     .stage-cat-badge.trap-badge {
       color: var(--accent-rose);
       background: rgba(244, 63, 94, 0.1);
@@ -723,6 +746,10 @@
       font-weight: 900;
       color: var(--accent-blue);
       letter-spacing: -0.5px;
+    }
+
+    .stage-ref-tag.wildcard-ref {
+      color: var(--accent-amber);
     }
 
     .stage-ref-tag.trap-ref {
@@ -1139,7 +1166,6 @@
        VIEW 0: OPENING SCREEN ('Can you hear Me?')
        ======================================================== -->
   <div id="opening-view" class="view active">
-    <!-- Direct Fullscreen Toggle on Opening Screen -->
     <button class="floating-fs-btn" onclick="toggleFullscreen()">
       <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
       <span class="fs-label-text">Fullscreen (F)</span>
@@ -1196,33 +1222,29 @@
     <div class="match-config-panel">
       <div class="config-grid">
         
-        <!-- 1. Category Direct Selector -->
+        <!-- 1. Team Focus Category Selector -->
         <div>
           <div class="config-section-title">
             <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M2.5 1A1.5 1.5 0 0 0 1 2.5v11A1.5 1.5 0 0 0 2.5 15h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 15 8.586V2.5A1.5 1.5 0 0 0 13.5 1h-11z"/></svg>
-            Select Category Directly
+            Team Memorized Category (Focus)
           </div>
           <div class="cat-selector-list" id="cat-selector-list"></div>
         </div>
 
-        <!-- 2. Deck Presets -->
+        <!-- 2. Deck Mode Presets -->
         <div>
           <div class="config-section-title">
             <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/></svg>
-            Deck Preset Mode
+            Match Round Mode
           </div>
           <div class="deck-preset-stack">
             <div class="preset-card selected" id="preset-std" onclick="selectDeckPreset('standard')">
-              <h5>Round 1: Standard Match</h5>
-              <p>• 15 Cards (12 Verses + 3 Traps)<br>• Establish team relay tempo &amp; rhythm</p>
+              <h5>Round 1: Standard Match <span>15 Cards</span></h5>
+              <p>• 10 Focus Category Verses (Memorized)<br>• 2 Bonus Short Verses (Wildcards)<br>• 3 Worldly Noise Traps</p>
             </div>
             <div class="preset-card" id="preset-comeback" onclick="selectDeckPreset('comeback')">
-              <h5>Round 2: The Comeback</h5>
-              <p>• 20 Cards (17 Verses + 3 Traps)<br>• Comeback Match (Listener swap required!)</p>
-            </div>
-            <div class="preset-card" id="preset-catonly" onclick="selectDeckPreset('catonly')">
-              <h5>Single Category Focus</h5>
-              <p>• 10 Verses from chosen category<br>• Verses only (No Traps)</p>
+              <h5>Round 2: The Comeback <span>20 Cards</span></h5>
+              <p>• 10 Focus Category Verses (Base)<br>• 7 Bonus Short Verses (Higher Stakes)<br>• 3 Worldly Noise Traps &bull; <strong>Swap Listener!</strong></p>
             </div>
           </div>
         </div>
@@ -1246,7 +1268,7 @@
               <span style="font-size: 11px; color: var(--text-muted);">sec</span>
             </div>
             <p style="font-size: 10px; color: var(--text-muted); line-height: 1.4;">
-              * The in-game clock can also be adjusted by &plusmn;10s during live play.
+              * Time can also be nudged by &plusmn;10s during live presentation.
             </p>
           </div>
         </div>
@@ -1256,7 +1278,7 @@
       <!-- Action Launch Bar -->
       <div class="launch-action-bar">
         <div class="target-team-summary">
-          Active Team: <strong id="summary-active-team-name">Team 1</strong> &bull; <span id="summary-active-mode-name">All Categories (Standard)</span>
+          Active: <strong id="summary-active-team-name">Team 1</strong> &bull; <span id="summary-active-mode-name">10 Focus + 2 Short Wildcards + 3 Traps</span>
         </div>
         <button class="btn-launch-game" onclick="launchArena()">
           LAUNCH ARENA &rarr;
@@ -1442,6 +1464,7 @@
       { id: 10, name: "Gratitude & Praise" }
     ];
 
+    /* Full 100 ESV Scripture Verses (Full book names & Uncut text) */
     const SCRIPTURE_BANK = [
       // Cat 1
       { catId: 1, cat: "The Holy Spirit's Work & Guidance", ref: "John 14:26", text: "But the Helper, the Holy Spirit, whom the Father will send in my name, he will teach you all things and bring to your remembrance all that I have said to you." },
@@ -1571,8 +1594,8 @@
         { id: 4, name: "Team 4 (Elijah)", score: 0 }
       ],
       activeTeamId: 1,
-      selectedCategoryId: 0,
-      selectedDeckPreset: "standard",
+      selectedCategoryId: 1, // Default Focus on Category 1
+      selectedDeckPreset: "standard", // standard (15) or comeback (20)
       timerLimitSeconds: 180,
       soundEnabled: true,
       trapsEnabled: true
@@ -1675,7 +1698,6 @@
       localStorage.setItem('silent_relay_state', JSON.stringify(appState));
     }
 
-    /* Initialization */
     window.addEventListener('DOMContentLoaded', () => {
       loadSavedState();
       renderScoreboard();
@@ -1715,21 +1737,19 @@
       updateConfigSummary();
     }
 
-    /* Category List */
+    /* Category List (Pick 1 Focus Category) */
     function renderCategoryList() {
       const list = document.getElementById('cat-selector-list');
       list.innerHTML = '';
 
-      const mixedItem = document.createElement('div');
-      mixedItem.className = `cat-select-item ${appState.selectedCategoryId === 0 ? 'selected' : ''}`;
-      mixedItem.innerHTML = `<span>★ All Categories (Random Pool)</span><span style="font-size:10px;">100 Verses</span>`;
-      mixedItem.onclick = () => selectCategoryDirect(0);
-      list.appendChild(mixedItem);
-
       CATEGORIES.forEach(c => {
         const item = document.createElement('div');
-        item.className = `cat-select-item ${appState.selectedCategoryId === c.id ? 'selected' : ''}`;
-        item.innerHTML = `<span>Cat ${c.id < 10 ? '0' + c.id : c.id}. ${c.name}</span><span style="font-size:10px;">10 Verses</span>`;
+        const isSelected = appState.selectedCategoryId === c.id;
+        item.className = `cat-select-item ${isSelected ? 'selected' : ''}`;
+        item.innerHTML = `
+          <span>Cat ${c.id < 10 ? '0' + c.id : c.id}. ${c.name}</span>
+          ${isSelected ? '<span class="focus-tag">FOCUS</span>' : '<span style="font-size:10px; color:var(--text-muted);">10 Verses</span>'}
+        `;
         item.onclick = () => selectCategoryDirect(c.id);
         list.appendChild(item);
       });
@@ -1737,11 +1757,6 @@
 
     function selectCategoryDirect(catId) {
       appState.selectedCategoryId = catId;
-      if (catId > 0 && appState.selectedDeckPreset !== 'catonly') {
-        selectDeckPreset('catonly');
-      } else if (catId === 0 && appState.selectedDeckPreset === 'catonly') {
-        selectDeckPreset('standard');
-      }
       renderCategoryList();
       updateConfigSummary();
     }
@@ -1751,7 +1766,6 @@
       appState.selectedDeckPreset = preset;
       document.getElementById('preset-std').classList.toggle('selected', preset === 'standard');
       document.getElementById('preset-comeback').classList.toggle('selected', preset === 'comeback');
-      document.getElementById('preset-catonly').classList.toggle('selected', preset === 'catonly');
       updateConfigSummary();
     }
 
@@ -1776,14 +1790,13 @@
       const team = appState.teams.find(t => t.id === appState.activeTeamId) || appState.teams[0];
       document.getElementById('summary-active-team-name').innerText = team ? team.name : 'Unknown';
 
-      let modeDesc = '';
-      if (appState.selectedCategoryId === 0) {
-        modeDesc = appState.selectedDeckPreset === 'comeback' ? 'Round 2: The Comeback (20 Cards)' : 'Round 1: Standard (15 Cards)';
-      } else {
-        const cat = CATEGORIES.find(c => c.id === appState.selectedCategoryId);
-        modeDesc = `Category Focus: ${cat ? cat.name : ''} (10 Verses)`;
-      }
-      document.getElementById('summary-active-mode-name').innerText = modeDesc;
+      const cat = CATEGORIES.find(c => c.id === appState.selectedCategoryId) || CATEGORIES[0];
+      const isComeback = appState.selectedDeckPreset === 'comeback';
+      const wildcardCount = isComeback ? 7 : 2;
+      const totalCount = isComeback ? 20 : 15;
+
+      document.getElementById('summary-active-mode-name').innerText = 
+        `10 Focus (${cat.name}) + ${wildcardCount} Short Wildcards + 3 Traps = ${totalCount} Cards`;
     }
 
     function shuffle(arr) {
@@ -1795,54 +1808,53 @@
       return a;
     }
 
+    /* ========================================================
+       CORE MATCH DECK GENERATOR ALGORITHM
+       - Focus Category: Exactly all 10 verses of the selected category
+       - Wildcards: Pulled strictly from verses with <= 14 words outside the focus category
+       - Traps: 3 Worldly Noise items
+       ======================================================== */
     function generateMatchDeck() {
-      let pool = [];
-      let verseCount = 12;
-      let trapCount = appState.trapsEnabled ? 3 : 0;
+      const focusCatId = appState.selectedCategoryId;
+      const isComeback = (appState.selectedDeckPreset === 'comeback');
+      const wildcardCount = isComeback ? 7 : 2;
+      const trapCount = appState.trapsEnabled ? 3 : 0;
 
-      if (appState.selectedCategoryId > 0) {
-        pool = SCRIPTURE_BANK.filter(v => v.catId === appState.selectedCategoryId);
-        const mapped = pool.map(v => ({
-          isTrap: false,
-          cat: v.cat,
-          ref: v.ref,
-          text: `\u201C${v.text}\u201D`
-        }));
-        if (appState.selectedDeckPreset === 'catonly' || !appState.trapsEnabled) {
-          return shuffle(mapped);
-        }
-        const traps = shuffle(TRAP_WORDS).slice(0, 2).map(w => ({
-          isTrap: true,
-          cat: "WORLDLY NOISE (TRAP)",
-          ref: "CULTURE TRAP",
-          text: w
-        }));
-        return shuffle([...mapped, ...traps]);
-      }
-
-      if (appState.selectedDeckPreset === 'comeback') {
-        verseCount = 17;
-        trapCount = appState.trapsEnabled ? 3 : 0;
-      } else {
-        verseCount = 12;
-        trapCount = appState.trapsEnabled ? 3 : 0;
-      }
-
-      const verses = shuffle(SCRIPTURE_BANK).slice(0, verseCount).map(v => ({
+      // 1. Exactly 10 verses from the team's chosen Focus Category
+      const focusVerses = SCRIPTURE_BANK.filter(v => v.catId === focusCatId).map(v => ({
         isTrap: false,
-        cat: v.cat,
+        isWildcard: false,
+        cat: `FOCUS: CAT ${v.catId < 10 ? '0' + v.catId : v.catId}`,
         ref: v.ref,
         text: `\u201C${v.text}\u201D`
       }));
 
+      // 2. Curate short verses (<= 14 words) strictly from OTHER categories
+      const shortPool = SCRIPTURE_BANK.filter(v => {
+        if (v.catId === focusCatId) return false;
+        const wordCount = v.text.trim().split(/\s+/).length;
+        return wordCount <= 14;
+      });
+
+      const wildcards = shuffle(shortPool).slice(0, wildcardCount).map(v => ({
+        isTrap: false,
+        isWildcard: true,
+        cat: `★ BONUS WILDCARD (SHORT SCRIPTURE)`,
+        ref: v.ref,
+        text: `\u201C${v.text}\u201D`
+      }));
+
+      // 3. Traps
       const traps = shuffle(TRAP_WORDS).slice(0, trapCount).map(w => ({
         isTrap: true,
+        isWildcard: false,
         cat: "WORLDLY NOISE (TRAP)",
-        ref: "CULTURE TRAP",
+        ref: "CULTURE NOISE",
         text: w
       }));
 
-      return shuffle([...verses, ...traps]);
+      // Merge and shuffle all cards for an exciting live flow
+      return shuffle([...focusVerses, ...wildcards, ...traps]);
     }
 
     function launchArena() {
@@ -1881,15 +1893,21 @@
 
       document.getElementById('curr-card-idx').innerText = currentCardIndex + 1;
 
+      // Reset style classes
+      stage.classList.remove('is-trap', 'is-wildcard');
+      catElem.className = 'stage-cat-badge';
+      refElem.className = 'stage-ref-tag';
+      textElem.className = 'stage-scripture-text';
+
       if (card.isTrap) {
         stage.classList.add('is-trap');
         catElem.className = 'stage-cat-badge trap-badge';
         refElem.className = 'stage-ref-tag trap-ref';
         textElem.className = 'stage-scripture-text trap-text';
-      } else {
-        stage.classList.remove('is-trap');
-        catElem.className = 'stage-cat-badge';
-        refElem.className = 'stage-ref-tag';
+      } else if (card.isWildcard) {
+        stage.classList.add('is-wildcard');
+        catElem.className = 'stage-cat-badge wildcard-badge';
+        refElem.className = 'stage-ref-tag wildcard-ref';
         textElem.className = 'stage-scripture-text';
       }
 
@@ -2081,19 +2099,19 @@
       saveState();
     }
 
-    /* Global Keyboard Navigation */
+    /* Global Keyboard Controller */
     window.addEventListener('keydown', (e) => {
-      // Allow user to type inside inputs without triggering shortcuts
+      // Don't intercept shortcuts when editing team names or numbers
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-      // Global Fullscreen Shortcut: 'F' or 'f'
+      // Fullscreen shortcut 'F' works across all screens
       if (e.key === 'f' || e.key === 'F') {
         e.preventDefault();
         toggleFullscreen();
         return;
       }
 
-      // Opening View: Space or Enter to Enter Lobby
+      // Opening Screen -> Space or Enter to enter Lobby
       if (document.getElementById('opening-view').classList.contains('active')) {
         if (e.code === 'Space' || e.code === 'Enter') {
           e.preventDefault();
@@ -2102,7 +2120,7 @@
         }
       }
 
-      // Live Arena View Navigation
+      // Live Arena Screen Navigation
       const arenaActive = document.getElementById('arena-view').classList.contains('active');
       if (arenaActive) {
         if (e.code === 'Space') {
