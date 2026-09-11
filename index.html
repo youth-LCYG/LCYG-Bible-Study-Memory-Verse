@@ -57,6 +57,33 @@
       display: flex;
     }
 
+    /* Floating Fullscreen Button on Opening Screen */
+    .floating-fs-btn {
+      position: absolute;
+      top: 24px;
+      right: 28px;
+      background: rgba(14, 21, 37, 0.75);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(10px);
+      transition: all 0.15s ease;
+      z-index: 10;
+    }
+
+    .floating-fs-btn:hover {
+      background: var(--surface-2);
+      color: var(--text-primary);
+      border-color: var(--border-focus);
+    }
+
     /* ========================================================
        0. OPENING COVER VIEW ('Can you hear Me?')
        ======================================================== */
@@ -1112,6 +1139,12 @@
        VIEW 0: OPENING SCREEN ('Can you hear Me?')
        ======================================================== -->
   <div id="opening-view" class="view active">
+    <!-- Direct Fullscreen Toggle on Opening Screen -->
+    <button class="floating-fs-btn" onclick="toggleFullscreen()">
+      <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
+      <span class="fs-label-text">Fullscreen (F)</span>
+    </button>
+
     <div class="opening-content-box">
       <span class="opening-tag">Silent Scripture Relay</span>
       <h1 class="opening-main-title">Can you hear Me?</h1>
@@ -1141,6 +1174,10 @@
         SILENT RELAY <span>ARENA CONTROLLER</span>
       </div>
       <div class="nav-actions">
+        <button class="btn-secondary" onclick="toggleFullscreen()">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
+          <span class="fs-label-text">Fullscreen (F)</span>
+        </button>
         <button class="btn-secondary" onclick="switchView('opening-view')">
           <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
           Title Screen
@@ -1240,6 +1277,10 @@
         <button class="btn-home-icon" onclick="confirmExitToHome()">
           <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/><path d="m8 3.293 6 6V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V9.293l6-6Z"/></svg>
           Lobby
+        </button>
+        <button class="btn-home-icon" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
+          <span class="fs-label-text">FS (F)</span>
         </button>
         <span class="active-team-pill" id="arena-team-pill">TEAM 1</span>
         <div class="card-progress-num">CARD <strong id="curr-card-idx">1</strong> / <span id="total-card-idx">15</span></div>
@@ -1577,6 +1618,48 @@
       setTimeout(() => playBeep(330, 'sawtooth', 0.5), 220);
     }
 
+    /* True Fullscreen Controller */
+    function isFullscreenActive() {
+      return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    }
+
+    function toggleFullscreen() {
+      const doc = document;
+      const docEl = document.documentElement;
+
+      if (!isFullscreenActive()) {
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen().catch(() => {});
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        } else if (docEl.mozRequestFullScreen) {
+          docEl.mozRequestFullScreen();
+        } else if (docEl.msRequestFullscreen) {
+          docEl.msRequestFullscreen();
+        }
+      } else {
+        if (doc.exitFullscreen) {
+          doc.exitFullscreen().catch(() => {});
+        } else if (doc.webkitExitFullscreen) {
+          doc.webkitExitFullscreen();
+        } else if (doc.mozCancelFullScreen) {
+          doc.mozCancelFullScreen();
+        } else if (doc.msExitFullscreen) {
+          doc.msExitFullscreen();
+        }
+      }
+    }
+
+    function updateFullscreenLabels() {
+      const active = isFullscreenActive();
+      document.querySelectorAll('.fs-label-text').forEach(el => {
+        el.innerText = active ? 'Exit FS (F)' : 'Fullscreen (F)';
+      });
+    }
+
+    document.addEventListener('fullscreenchange', updateFullscreenLabels);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenLabels);
+
     /* Persistence */
     function loadSavedState() {
       const saved = localStorage.getItem('silent_relay_state');
@@ -1599,6 +1682,7 @@
       renderCategoryList();
       renderAdminModal();
       updateConfigSummary();
+      updateFullscreenLabels();
     });
 
     function enterFromOpening() {
@@ -1997,17 +2081,19 @@
       saveState();
     }
 
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
-    }
-
-    /* Key Navigation */
+    /* Global Keyboard Navigation */
     window.addEventListener('keydown', (e) => {
-      // Opening Screen -> Space or Enter to Enter Lobby
+      // Allow user to type inside inputs without triggering shortcuts
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      // Global Fullscreen Shortcut: 'F' or 'f'
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+        return;
+      }
+
+      // Opening View: Space or Enter to Enter Lobby
       if (document.getElementById('opening-view').classList.contains('active')) {
         if (e.code === 'Space' || e.code === 'Enter') {
           e.preventDefault();
@@ -2016,24 +2102,21 @@
         }
       }
 
-      // Live Arena Screen Navigation
+      // Live Arena View Navigation
       const arenaActive = document.getElementById('arena-view').classList.contains('active');
-      if (!arenaActive) return;
-
-      if (e.code === 'Space') {
-        e.preventDefault();
-        handleCorrect();
-      } else if (e.code === 'ArrowRight') {
-        e.preventDefault();
-        handlePass();
-      } else if (e.key === 'p' || e.key === 'P') {
-        e.preventDefault();
-        togglePause();
-      } else if (e.key === 'f' || e.key === 'F') {
-        e.preventDefault();
-        toggleFullscreen();
-      } else if (e.key === 'Escape') {
-        confirmExitToHome();
+      if (arenaActive) {
+        if (e.code === 'Space') {
+          e.preventDefault();
+          handleCorrect();
+        } else if (e.code === 'ArrowRight') {
+          e.preventDefault();
+          handlePass();
+        } else if (e.key === 'p' || e.key === 'P') {
+          e.preventDefault();
+          togglePause();
+        } else if (e.key === 'Escape') {
+          confirmExitToHome();
+        }
       }
     });
   </script>
